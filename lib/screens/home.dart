@@ -186,10 +186,14 @@ class _HomePageState extends State<HomePage> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.asset(
-                "assets/images/h_logo.png",
-                height: 50,
+              Text(
+                "\$ Currency Converter",
+                style:TextStyle(fontSize:25,color: Colors.white)
               )
+//              Image.asset(
+//                "assets/images/h_logo.png",
+//                height: 30,
+//              )
             ],
           ),
         ),
