@@ -34,6 +34,7 @@ dependencies:
   connectivity:
   rounded_loading_button:
   like_button:
+  flutter_tags:
   async:
 
 dev_dependencies:
