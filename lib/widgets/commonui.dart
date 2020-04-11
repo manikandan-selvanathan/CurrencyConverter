@@ -37,12 +37,16 @@ Widget getPlaceholder(var myContext, var message, var placeholderPage,
 }
 
 
-Widget getiOSProgressBar() {
-  return Container(
+Widget getProgressbar() {
+  return Center(
+    child: Container(
+      height:50,
       color: Colors.white,
       child: Center(
-          child: new CupertinoActivityIndicator()
-      ));
+          child: new CircularProgressIndicator(
+              valueColor: new AlwaysStoppedAnimation<Color>(Colors.green))),
+    ),
+  );
 }
 
 

@@ -193,6 +193,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomPadding: false,
         backgroundColor: PrimaryColor,
         key: _scaffoldKey,
         body: getBody(context),
@@ -241,7 +242,7 @@ class _HomePageState extends State<HomePage> {
           buttonText: REFRESH_BUTTON_TEXT,
           onButtonClicked: fetchData);
     } else if (isLoading) {
-      return getiOSProgressBar();
+      return getProgressbar();
     } else if (!isLoading && currency == null) {
       return getPlaceholder(
           context, NO_INTERNET_MESSAGE, PlaceholderPages.something_went_wrong,
