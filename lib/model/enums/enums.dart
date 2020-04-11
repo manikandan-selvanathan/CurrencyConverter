@@ -13,8 +13,6 @@ extension on CountryCodes {
 
 }
 
-
-
 enum CountryCodes {
   USD,
   AED,

@@ -34,7 +34,7 @@ class WebService
     }
     catch(err)
     {
-      print(err);
+      print("fetchConversionRates $err");
       return null;
     }
   }

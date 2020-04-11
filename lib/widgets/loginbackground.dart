@@ -18,14 +18,14 @@ class Background extends StatelessWidget {
             child: Container(
             ),
           ),
-          Stack(
-            alignment: Alignment.bottomLeft,
-            children: <Widget>[
-              WavyFooter(),
-              CirclePink(),
-              CircleYellow(),
-            ],
-          )
+//          Stack(
+//            alignment: Alignment.bottomLeft,
+//            children: <Widget>[
+//              WavyFooter(),
+//              CirclePink(),
+//              CircleYellow(),
+//            ],
+//          )
         ],
       ),
     );
@@ -33,9 +33,9 @@ class Background extends StatelessWidget {
 }
 
 const List<Color> orangeGradients = [
-  Color(0xFFFF9844),
-  Color(0xFFFE8853),
-  Color(0xFFFD7267),
+  Color(0xFF2EB62C),
+  Color(0xFF57C84D),
+  Color(0xFF83D475),
 ];
 
 const List<Color> aquaGradients = [
@@ -55,7 +55,7 @@ class WavyHeader extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.center),
         ),
-        height: MediaQuery.of(context).size.height / 3.5,
+        height: MediaQuery.of(context).size.height / 3,
       ),
     );
   }

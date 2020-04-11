@@ -12,6 +12,7 @@ import 'package:currency_converter_app/model/enums/enums.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 import 'package:currency_converter_app/model/customersearch.dart';
 import 'package:currency_converter_app/theme/style.dart';
+import 'package:currency_converter_app/widgets/loginbackground.dart';
 import 'package:path/path.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -181,22 +182,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         backgroundColor: PrimaryColor,
         key: _scaffoldKey,
-        appBar: AppBar(
-          backgroundColor: Colors.green,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                "\$ Currency Converter",
-                style:TextStyle(fontSize:25,color: Colors.white)
-              )
-//              Image.asset(
-//                "assets/images/h_logo.png",
-//                height: 30,
-//              )
-            ],
-          ),
-        ),
+
         body: getBody(context),
         bottomNavigationBar: getConvertButton());
   }
@@ -257,75 +243,90 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Container(
-      padding: EdgeInsets.all(10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+      child: Stack(
         children: <Widget>[
-          _buildEmailTF(),
+          Background(),
           Container(
-            margin: EdgeInsets.all(5),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: Theme(
-                    data:
-                        Theme.of(_context).copyWith(canvasColor: Colors.white),
-                    child: new DropdownButton<String>(
-                      isExpanded: true,
-                      value: fromCurrency ?? "",
-                      items: currency
-                          .getCountryCodes(currency.conversionRates)
-                          .map((String value) {
-                        return new DropdownMenuItem<String>(
-                          value: value,
-                          child: new Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String newValue) {
-                        setState(() {
-                          fromCurrency = newValue;
-                        });
-                      },
+          margin: EdgeInsets.only(top:250),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                    Text(
+                    "\$ Currency Converter",
+                    style:TextStyle(fontSize:30,color: Colors.green,fontWeight: FontWeight.bold)
+                    ),
+                  SizedBox(height:30),
+                  _buildEmailTF(),
+                  Container(
+                    margin: EdgeInsets.all(10),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Theme(
+                            data:
+                            Theme.of(_context).copyWith(canvasColor: Colors.white),
+                            child: new DropdownButton<String>(
+                              isExpanded: true,
+                              value: fromCurrency ?? "",
+                              items: currency
+                                  .getCountryCodes(currency.conversionRates)
+                                  .map((String value) {
+                                return new DropdownMenuItem<String>(
+                                  value: value,
+                                  child: new Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  fromCurrency = newValue;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.swap_horiz,color:Colors.green),
+                          onPressed: () {
+                            var oldValue = fromCurrency;
+                            fromCurrency = toCurrency;
+                            toCurrency = oldValue;
+                            setState(() {});
+                          },
+                        ),
+                        Expanded(
+                          child: Theme(
+                            data:
+                            Theme.of(_context).copyWith(canvasColor: Colors.white),
+                            child: new DropdownButton<String>(
+                              isExpanded: true,
+                              value: toCurrency ?? "",
+                              items: currency
+                                  .getCountryCodes(currency.conversionRates)
+                                  .map((String value) {
+                                return new DropdownMenuItem<String>(
+                                  value: value,
+                                  child: new Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  toCurrency = newValue;
+                                });
+                              },
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.swap_horiz,color:Colors.green),
-                  onPressed: () {
-                    var oldValue = fromCurrency;
-                    fromCurrency = toCurrency;
-                    toCurrency = oldValue;
-                    setState(() {});
-                  },
-                ),
-                Expanded(
-                  child: Theme(
-                    data:
-                        Theme.of(_context).copyWith(canvasColor: Colors.white),
-                    child: new DropdownButton<String>(
-                      isExpanded: true,
-                      value: toCurrency ?? "",
-                      items: currency
-                          .getCountryCodes(currency.conversionRates)
-                          .map((String value) {
-                        return new DropdownMenuItem<String>(
-                          value: value,
-                          child: new Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String newValue) {
-                        setState(() {
-                          toCurrency = newValue;
-                        });
-                      },
-                    ),
-                  ),
-                )
-              ],
+                  SizedBox(height: 50),
+                  _tags
+                ],
+              ),
             ),
           ),
-          SizedBox(height: 50),
-          _tags
         ],
       ),
     );

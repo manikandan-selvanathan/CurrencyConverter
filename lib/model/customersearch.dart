@@ -36,7 +36,7 @@ class CustomerSearch {
       }
       return ids;
     } catch (err) {
-      print("getAllOpenedNotification: $err");
+      print("getSearchHistory: $err");
       return null;
     }
   }
