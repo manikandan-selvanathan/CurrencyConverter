@@ -12,5 +12,6 @@ const String ENTER_THE_AMOUNT = "Enter the amount";
 const String INITIAL_CURRENCY_CODE = "USD";
 const String SHAREDPREFERENCES_SEARCH = 'SharedPreferenceSearch';
 const String INVALID_AMOUNT_ERROR = 'Please enter the amount';
+const String SAME_CURRENCY_ERROR = 'Both are same. Try different currencies';
 
 

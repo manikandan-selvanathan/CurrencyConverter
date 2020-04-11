@@ -31,13 +31,18 @@ class _HomePageState extends State<HomePage> {
   String toCurrency;
   String result;
   final GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();
-  final GlobalKey<TagsState> _scaffoldKey = GlobalKey<TagsState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<CustomerSearch> searchItems = new List<CustomerSearch>();
   CustomerSearch customerSearch = new CustomerSearch();
 
   @override
   void initState() {
-    getBase();
+
+    new Future.delayed(Duration.zero,() {
+      fetchData();
+    });
+
+
     _convertController = new RoundedLoadingButtonController();
     _textEditingController = new TextEditingController();
     getSearchHistory();
@@ -49,45 +54,53 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  void clearResult()
-  {
+  void clearResult() {
     setState(() {
-      result="";
+      result = "";
     });
   }
 
-  void getBase() async {
+  void fetchData() async {
+    try {
+      if (isNetworkConnected = await isNetworkAvailable()) {
+        WebService webService = new WebService();
+        if (fromCurrency == null) {
+          toggleLoading(true);
+        }
+        currency = await webService
+            .fetchConversionRates(fromCurrency ?? INITIAL_CURRENCY_CODE);
 
-    if (isNetworkConnected = await isNetworkAvailable()) {
-      WebService webService = new WebService();
-      if (fromCurrency == null) {
-        toggleLoading(true);
+        if (_textEditingController.text.isNotEmpty) {
+          if (fromCurrency.toLowerCase() != toCurrency.toLowerCase()) {
+            result = currency.convertTheValue(currency,
+                _textEditingController.text, fromCurrency, toCurrency);
+            setState(() {});
+            await customerSearch.saveASearch("$fromCurrency$toCurrency",
+                fromCurrency, toCurrency, _textEditingController.text);
+            getSearchHistory();
+          } else {
+            showSnackBar(_scaffoldKey.currentState, SAME_CURRENCY_ERROR);
+          }
+        } else if (fromCurrency != null) {
+          showSnackBar(_scaffoldKey.currentState, INVALID_AMOUNT_ERROR);
+        }
+
+        if (fromCurrency == null) {
+          fromCurrency =
+              enumToString(currency.conversionRates.keys.toList()[0]);
+          toCurrency = enumToString(currency.conversionRates.keys.toList()[1]);
+        }
+
+        print(currency);
+        toggleLoading(false);
+      } else {
+        toggleLoading(false);
+        showNoInternetSnackbar(context, false);
       }
-      currency = await webService
-          .fetchConversionRates(fromCurrency ?? INITIAL_CURRENCY_CODE);
-
-      if (_textEditingController.text.isNotEmpty) {
-        result = currency.convertTheValue(
-            currency, _textEditingController.text, fromCurrency, toCurrency);
-        setState(() {});
-        await customerSearch.saveASearch("$fromCurrency$toCurrency",
-            fromCurrency, toCurrency, _textEditingController.text);
-        getSearchHistory();
-      } else if (fromCurrency != null) {
-        showSnackBar(_scaffoldKey.currentState, INVALID_AMOUNT_ERROR);
-      }
-
-      if (fromCurrency == null) {
-        fromCurrency = enumToString(currency.conversionRates.keys.toList()[0]);
-        toCurrency = enumToString(currency.conversionRates.keys.toList()[1]);
-      }
-
-      print(currency);
-      toggleLoading(false);
-    } else {
-      toggleLoading(false);
-      showNoInternetSnackbar(context, false);
+    } catch (err) {
+      print("fetchData $err");
     }
+
     _convertController.reset();
   }
 
@@ -182,7 +195,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         backgroundColor: PrimaryColor,
         key: _scaffoldKey,
-
         body: getBody(context),
         bottomNavigationBar: getConvertButton());
   }
@@ -207,7 +219,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(color: Colors.white)),
                 controller: _convertController,
                 onPressed: () {
-                  getBase();
+                  fetchData();
                 },
               ),
             ])));
@@ -221,17 +233,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void refresh() {
-    getBase();
-  }
-
   Widget getBody(BuildContext _context) {
     if (!isNetworkConnected) {
       return getPlaceholder(
           context, NO_INTERNET_MESSAGE, PlaceholderPages.no_internet,
           isButtonRequired: true,
           buttonText: REFRESH_BUTTON_TEXT,
-          onButtonClicked: refresh);
+          onButtonClicked: fetchData);
     } else if (isLoading) {
       return getiOSProgressBar();
     } else if (!isLoading && currency == null) {
@@ -239,7 +247,7 @@ class _HomePageState extends State<HomePage> {
           context, NO_INTERNET_MESSAGE, PlaceholderPages.something_went_wrong,
           isButtonRequired: true,
           buttonText: REFRESH_BUTTON_TEXT,
-          onButtonClicked: refresh);
+          onButtonClicked: fetchData);
     }
 
     return Container(
@@ -247,17 +255,18 @@ class _HomePageState extends State<HomePage> {
         children: <Widget>[
           Background(),
           Container(
-          margin: EdgeInsets.only(top:250),
+            margin: EdgeInsets.only(top: 250),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                    Text(
-                    "\$ Currency Converter",
-                    style:TextStyle(fontSize:30,color: Colors.green,fontWeight: FontWeight.bold)
-                    ),
-                  SizedBox(height:30),
+                  Text("\$ Currency Converter",
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold)),
+                  SizedBox(height: 30),
                   _buildEmailTF(),
                   Container(
                     margin: EdgeInsets.all(10),
@@ -265,8 +274,8 @@ class _HomePageState extends State<HomePage> {
                       children: <Widget>[
                         Expanded(
                           child: Theme(
-                            data:
-                            Theme.of(_context).copyWith(canvasColor: Colors.white),
+                            data: Theme.of(_context)
+                                .copyWith(canvasColor: Colors.white),
                             child: new DropdownButton<String>(
                               isExpanded: true,
                               value: fromCurrency ?? "",
@@ -287,7 +296,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.swap_horiz,color:Colors.green),
+                          icon: Icon(Icons.swap_horiz, color: Colors.green),
                           onPressed: () {
                             var oldValue = fromCurrency;
                             fromCurrency = toCurrency;
@@ -297,8 +306,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                         Expanded(
                           child: Theme(
-                            data:
-                            Theme.of(_context).copyWith(canvasColor: Colors.white),
+                            data: Theme.of(_context)
+                                .copyWith(canvasColor: Colors.white),
                             child: new DropdownButton<String>(
                               isExpanded: true,
                               value: toCurrency ?? "",

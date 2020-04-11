@@ -70,6 +70,12 @@ showNoInternetSnackbar(var context, bool isScaffoldState) {
 }
 
 Widget showSnackBar(var scaffold, var message) {
-  final snackBar = SnackBar(content: Text(message));
-  scaffold.showSnackBar(snackBar);
+  try{
+    final snackBar = SnackBar(content: Text(message));
+    scaffold.showSnackBar(snackBar);
+  }catch(err)
+  {
+    print("showSnackBar $err");
+  }
+
 }
