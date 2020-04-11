@@ -48,7 +48,15 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
+  void clearResult()
+  {
+    setState(() {
+      result="";
+    });
+  }
+
   void getBase() async {
+
     if (isNetworkConnected = await isNetworkAvailable()) {
       WebService webService = new WebService();
       if (fromCurrency == null) {
@@ -60,9 +68,7 @@ class _HomePageState extends State<HomePage> {
       if (_textEditingController.text.isNotEmpty) {
         result = currency.convertTheValue(
             currency, _textEditingController.text, fromCurrency, toCurrency);
-        setState(() {
-          result = "$toCurrency: $result";
-        });
+        setState(() {});
         await customerSearch.saveASearch("$fromCurrency$toCurrency",
             fromCurrency, toCurrency, _textEditingController.text);
         getSearchHistory();
@@ -125,7 +131,7 @@ class _HomePageState extends State<HomePage> {
             fromCurrency = searchItems[item.index].fromCurrency;
             toCurrency = searchItems[item.index].toCurrency;
             _textEditingController.text = searchItems[item.index].amount;
-            setState(() {});
+            clearResult();
           },
         );
       },
@@ -200,7 +206,7 @@ class _HomePageState extends State<HomePage> {
               Text(
                 result ?? "",
                 style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 26,
                     color: Colors.black,
                     fontWeight: FontWeight.bold),
               ),
@@ -280,7 +286,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.swap_horiz),
+                  icon: Icon(Icons.swap_horiz,color:Colors.green),
                   onPressed: () {
                     var oldValue = fromCurrency;
                     fromCurrency = toCurrency;
